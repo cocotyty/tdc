@@ -27,17 +27,16 @@ func (d *dynamicToml) Load(filePath string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	tomlFile, err = d.parse(tomlFile)
-	if err != nil {
-		return nil, err
-	}
-	return tomlFile, nil
+	return d.Parse(tomlFile)
 }
-func (d *dynamicToml) parse(data []byte) (out []byte, err error) {
+func (d *dynamicToml) Parse(data []byte) (out []byte, err error) {
 	output := bytes.NewBuffer(nil)
-	lines := bytes.Split(data, []byte('\n'))
+	lines := bytes.Split(data, []byte{'\n'})
 	for i, line := range lines {
 		line = bytes.TrimSpace(line)
+		if len(line) == 0 {
+			continue
+		}
 		data, err := d.tryExec(line)
 		if err != nil {
 			return nil, errors.New(strconv.Itoa(i) + "line:" + string(line) + " query resource failed.caused by :" + err.Error())
@@ -57,7 +56,7 @@ func (d *dynamicToml) tryExec(data []byte) (out []byte, err error) {
 
 	words = filterEmpty(words)
 
-	if len(words) != 2 || bytes.Equal(words[1], []byte("refs")) {
+	if len(words) != 3 || !bytes.Equal(words[1], []byte("refs")) {
 		return data, nil
 	}
 
@@ -65,13 +64,13 @@ func (d *dynamicToml) tryExec(data []byte) (out []byte, err error) {
 	if err != nil {
 		return data, err
 	}
-	out = make([]byte, len(data)+len(out)+1)
+	out = make([]byte, len(data)+len(source)+1)
 
 	copy(out, data)
 
 	out[len(data)] = '\n'
 
-	copy(out[:len(data)+1], source)
+	copy(out[len(data)+1:], source)
 
 	return out, nil
 }
