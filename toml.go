@@ -64,7 +64,7 @@ func (d *dynamicToml) tryExec(data []byte) (out []byte, err error) {
 		return data, nil
 	}
 
-	source, err := d.Solver.ConfigurationRefByName(string(words[1]), d.listener)
+	source, err := d.Solver.ConfigurationRefByName(string(words[2]), d.listener)
 	if err != nil {
 		return data, err
 	}

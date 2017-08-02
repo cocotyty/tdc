@@ -40,13 +40,25 @@ type httpResourceSolverResp struct {
 }
 
 func (s *httpResourceSolver) ConfigurationRefByName(name string, fn Listener) (data []byte, err error) {
+	for i := 0; i < 3; i++ {
+		data, err = s.configurationRefByName(name, fn)
+		if err == nil {
+			break
+		}
+		time.Sleep(time.Duration(i) * 500 * time.Millisecond)
+	}
+	return data, err
+}
+
+func (s *httpResourceSolver) configurationRefByName(name string, fn Listener) (data []byte, err error) {
 	resp := &httpResourceSolverResp{}
+
 	err = httpclient.Get(s.Address).Query("name", name).Query("env", s.Env).Send().JSON(resp)
 	if err != nil {
 		return nil, err
 	}
 	if resp.Error != "" {
-		return nil, errors.New("error")
+		return nil, errors.New(resp.Error)
 	}
 	if !resp.Exist {
 		return nil, errors.New(name + " not exist")
