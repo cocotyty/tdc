@@ -14,14 +14,16 @@ type ResourceSolver interface {
 	ConfigurationRefByName(name string, listener Listener) ([]byte, error)
 }
 
-func NewDynamicToml(solver ResourceSolver) *dynamicToml {
+func NewDynamicToml(solver ResourceSolver, listener Listener) *dynamicToml {
 	return &dynamicToml{
-		Solver: solver,
+		Solver:   solver,
+		listener: listener,
 	}
 }
 
 type dynamicToml struct {
-	Solver ResourceSolver
+	Solver   ResourceSolver
+	listener Listener
 }
 
 func (d *dynamicToml) Load(filePath string) ([]byte, error) {
@@ -62,7 +64,7 @@ func (d *dynamicToml) tryExec(data []byte) (out []byte, err error) {
 		return data, nil
 	}
 
-	source, err := d.Solver.ConfigurationRefByName(string(words[1]))
+	source, err := d.Solver.ConfigurationRefByName(string(words[1]), d.listener)
 	if err != nil {
 		return data, err
 	}
