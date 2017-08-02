@@ -8,8 +8,10 @@ import (
 	"strconv"
 )
 
+type Listener func(name string, data []byte, version uint64, exist bool)
+
 type ResourceSolver interface {
-	ConfigurationRefByName(name string) ([]byte, error)
+	ConfigurationRefByName(name string, listener Listener) ([]byte, error)
 }
 
 func NewDynamicToml(solver ResourceSolver) *dynamicToml {

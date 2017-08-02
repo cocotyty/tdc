@@ -6,7 +6,7 @@ import (
 )
 
 type ResolverQuery interface {
-	Query(name, env string) ([]byte, error)
+	Query(name, env string) ([]byte, uint64, bool, error)
 }
 
 type Server struct {
@@ -15,12 +15,16 @@ type Server struct {
 
 func (s *Server) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	name, env := req.FormValue("name"), req.FormValue("env")
-	data, err := s.ResolverQuery.Query(name, env)
-
-	jsonResp, _ := json.Marshal(httpResourceSolverResp{
-		Exist: err == nil,
-		Data:  data,
-	})
+	data, version, exist, err := s.ResolverQuery.Query(name, env)
+	solverResp := httpResourceSolverResp{
+		Exist:   exist,
+		Data:    data,
+		Version: version,
+	}
+	if err != nil {
+		solverResp.Error = err.Error()
+	}
+	jsonResp, _ := json.Marshal(solverResp)
 	resp.Header().Set("Content-Type", "application/json")
 	resp.Write(jsonResp)
 }

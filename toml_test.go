@@ -8,7 +8,7 @@ import (
 type FakeSolver struct {
 }
 
-func (s FakeSolver) ConfigurationRefByName(name string) ([]byte, error) {
+func (s FakeSolver) ConfigurationRefByName(name string, listener Listener) ([]byte, error) {
 	return []byte(`server="100"`), nil
 }
 func TestDynamicToml_Load(t *testing.T) {
