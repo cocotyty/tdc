@@ -60,11 +60,11 @@ func (d *dynamicToml) tryExec(data []byte) (out []byte, err error) {
 
 	words = filterEmpty(words)
 
-	if len(words) != 3 || !bytes.Equal(words[1], []byte("refs")) {
+	if len(words) != 2 || !bytes.Equal(words[0], []byte("####")) {
 		return data, nil
 	}
 
-	source, err := d.Solver.ConfigurationRefByName(string(words[2]), d.listener)
+	source, err := d.Solver.ConfigurationRefByName(string(words[1]), d.listener)
 	if err != nil {
 		return data, err
 	}

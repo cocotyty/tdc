@@ -12,15 +12,15 @@ func (s FakeSolver) ConfigurationRefByName(name string, listener Listener) ([]by
 	return []byte(`server="100"`), nil
 }
 func TestDynamicToml_Load(t *testing.T) {
-	data, err := NewDynamicToml(FakeSolver{}).Parse([]byte(`
-	# refs serverConf
+	data, err := NewDynamicToml(FakeSolver{}, nil).Parse([]byte(`
+	#### serverConf
 	a=1
 	b=2
 	`))
 	if err != nil {
 		t.Fatal(err)
 	}
-	expected := `# refs serverConf
+	expected := `#### serverConf
 server="100"
 a=1
 b=2`
