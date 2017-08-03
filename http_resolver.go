@@ -100,7 +100,7 @@ func (s *httpResourceSolver) StartWatch() {
 			}
 			if node.Version != resp.Version {
 				if node.Listener != nil {
-					mlog.Info("event -> node changed", node.Name, resp.Version)
+					mlog.Debug("event -> node changed", node.Name, resp.Version)
 					node.Listener(node.Name, resp.Data, resp.Version, resp.Exist)
 				}
 			}
