@@ -98,9 +98,11 @@ func (s *httpResourceSolver) StartWatch() {
 				glog.Error("error -> watch conf node", node.Name, resp.Error)
 				continue
 			}
-			if node.Listener != nil {
-				glog.Info("event -> node changed", node.Name, resp.Version)
-				node.Listener(node.Name, resp.Data, resp.Version, resp.Exist)
+			if node.Version != resp.Version {
+				if node.Listener != nil {
+					glog.Info("event -> node changed", node.Name, resp.Version)
+					node.Listener(node.Name, resp.Data, resp.Version, resp.Exist)
+				}
 			}
 			node.Version = resp.Version
 		}
