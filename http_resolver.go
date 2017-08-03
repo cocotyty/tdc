@@ -3,7 +3,7 @@ package tdc
 import (
 	"errors"
 	"github.com/cocotyty/httpclient"
-	"github.com/golang/glog"
+	"github.com/cocotyty/mlog"
 	"sync"
 	"time"
 )
@@ -91,16 +91,16 @@ func (s *httpResourceSolver) StartWatch() {
 			resp := &httpResourceSolverResp{}
 			err := httpclient.Get(s.Address).Query("name", node.Name).Query("env", s.Env).Send().JSON(resp)
 			if err != nil {
-				glog.Error("error -> watch conf node", node.Name, err)
+				mlog.Error("error -> watch conf node", node.Name, err)
 				continue
 			}
 			if resp.Error != "" {
-				glog.Error("error -> watch conf node", node.Name, resp.Error)
+				mlog.Error("error -> watch conf node", node.Name, resp.Error)
 				continue
 			}
 			if node.Version != resp.Version {
 				if node.Listener != nil {
-					glog.Info("event -> node changed", node.Name, resp.Version)
+					mlog.Info("event -> node changed", node.Name, resp.Version)
 					node.Listener(node.Name, resp.Data, resp.Version, resp.Exist)
 				}
 			}
